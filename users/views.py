@@ -35,4 +35,4 @@ class SignInUser(APIView):
                 return Response(message, status=status.HTTP_200_OK)
             else:
                 message = {'login': 'username or password is incorrect'}
-                return Response(message, status=status.HTTP_400_BAD_REQUEST)
+                return Response(message, status=status.HTTP_401_UNAUTHORIZED)
