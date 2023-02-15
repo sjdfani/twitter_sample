@@ -2,9 +2,9 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .utils import get_tokens_for_user
+from .models import User
 from .serializer import (
     SignUpUserSerializer, SignInUserSerializer, UserSerializer,
 )
@@ -12,7 +12,7 @@ from .serializer import (
 
 class SignUpUser(CreateAPIView):
     serializer_class = SignUpUserSerializer
-    queryset = get_user_model().objects.all()
+    queryset = User.objects.all()
 
 
 class SignInUser(APIView):
@@ -23,7 +23,7 @@ class SignInUser(APIView):
         if serializer.is_valid(raise_exception=True):
             username = serializer.validated_data['username']
             password = serializer.validated_data['password']
-            user = get_user_model().objects.get(username=username)
+            user = User.objects.get(username=username)
             if user.check_password(password):
                 user.last_login = timezone.now()
                 user.save()
