@@ -6,8 +6,8 @@ from .views import (
 app_name = 'twittes'
 
 urlpatterns = [
-    path('create/', CreateTwittes.as_view(), name='create-twittes'),
-    path('list/', TwittesList.as_view(), name='twittes-list'),
+    path('create/', CreateTwittes.as_view(), name='create_twittes'),
+    path('list/', TwittesList.as_view(), name='twittes_list'),
     path('list/<int:pk>/', RetrieveUpdateDestroyTwittes.as_view(),
-         name='retrieve-update-destroy-twittes'),
+         name='retrieve_update_destroy_twittes'),
 ]
