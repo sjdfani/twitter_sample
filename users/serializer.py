@@ -1,25 +1,25 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
+        model = User
         exclude = ('password',)
 
 
 class SignUpUserSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=20)
+    email = serializers.EmailField()
     password = serializers.CharField(max_length=50, write_only=True)
 
-    def validate_username(self, value):
-        if get_user_model().objects.filter(username=value).exists():
-            raise serializers.ValidationError('this username is taken')
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('this email is taken')
         return value
 
     def process(self, validated_data):
-        user = get_user_model().objects.create(
-            username=validated_data['username']
+        user = User.objects.create(
+            email=validated_data['email']
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -29,10 +29,10 @@ class SignUpUserSerializer(serializers.Serializer):
 
 
 class SignInUserSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=20)
+    email = serializers.EmailField()
     password = serializers.CharField(max_length=50, write_only=True)
 
-    def validate_username(self, value):
-        if not get_user_model().objects.filter(username=value).exists():
-            raise serializers.ValidationError('this username is not exists')
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError('this email is not exists')
         return value
