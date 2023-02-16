@@ -1,8 +1,11 @@
 from rest_framework import serializers
 from .models import Twittes
+from users.serializer import UserSerializer
 
 
 class TwittesSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Twittes
         fields = '__all__'
