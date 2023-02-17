@@ -19,7 +19,7 @@ class TwittesMedia(models.Model):
     twittes = models.ForeignKey(
         Twittes, on_delete=models.CASCADE, verbose_name=_('Twittes'), related_name='media_twittes'
     )
-    media = models.ImageField(upload_to='twittes/', verbose_name=_('Media'))
+    media = models.FileField(upload_to='twittes/', verbose_name=_('Media'))
     created_at = models.DateTimeField(auto_now_add=True)
 
 
