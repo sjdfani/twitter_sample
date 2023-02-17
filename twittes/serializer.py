@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Twittes, TwittesMedia, Like, Comment
+from .models import Twittes, TwittesMedia, Like, Comment, ReTwittes
 from users.serializer import UserSerializer
 
 
@@ -68,6 +68,46 @@ class CreateLikeSerializer(serializers.Serializer):
     def create(self, validated_data):
         user = self.context['request'].user
         obj = Like.objects.create(
+            user=user,
+            twittes=validated_data['twittes']
+        )
+        return obj
+
+
+class CreateCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        exclude = ('user',)
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        obj = Comment.objects.create(user=user, **validated_data)
+        return obj
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class CreateReTwittesSerializer(serializers.Serializer):
+    twittes = serializers.PrimaryKeyRelatedField(
+        queryset=Twittes.objects.all()
+    )
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if ReTwittes.objects.filter(user=user, twittes=attrs['twittes']).exists():
+            raise serializers.ValidationError(
+                {'re-twittes': 'you re-twittes before'})
+        return attrs
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        obj = ReTwittes.objects.create(
             user=user,
             twittes=validated_data['twittes']
         )

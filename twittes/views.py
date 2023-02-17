@@ -3,10 +3,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Twittes, Like, Comment
+from .models import Twittes, Like, Comment, ReTwittes
 from .serializer import (
     TwittesSerializer, CreateTwittesSerializer, RetrieveUpdateDestroyTwittesSerializer,
-    LikeSerializer, CreateLikeSerializer,
+    LikeSerializer, CreateLikeSerializer, CreateCommentSerializer, CommentSerializer,
+    CreateReTwittesSerializer,
 )
 
 
@@ -56,6 +57,38 @@ class DeleteLike(APIView):
 
     def delete(self, request, pk, **kwargs):
         obj = Like.objects.filter(user=self.request.user, twittes__pk=pk)
+        if obj.exists():
+            obj.first().delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            message = {'obj': 'Not found'}
+            return Response(message, status=status.HTTP_404_NOT_FOUND)
+
+
+class CreateComment(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CreateCommentSerializer
+    queryset = Comment.objects.all()
+
+
+class CommentList(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Comment.objects.filter(twittes__id=pk)
+
+
+class CreateReTwittes(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CreateReTwittesSerializer
+    queryset = ReTwittes.objects.all()
+
+
+class DeleteReTwittes(APIView):
+    def delete(self, request, pk, **kwargs):
+        obj = ReTwittes.objects.filter(user=self.request.user, twittes__pk=pk)
         if obj.exists():
             obj.first().delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
