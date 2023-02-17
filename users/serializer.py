@@ -18,16 +18,14 @@ class SignUpUserSerializer(serializers.Serializer):
             raise serializers.ValidationError('this email is taken')
         return value
 
-    def process(self, validated_data):
+    def create(self, validated_data):
         user = User.objects.create(
             email=validated_data['email'],
             username=validated_data['username'],
         )
         user.set_password(validated_data['password'])
         user.save()
-
-    def save(self, **kwargs):
-        self.process(self.validated_data)
+        return user
 
 
 class SignInUserSerializer(serializers.Serializer):
