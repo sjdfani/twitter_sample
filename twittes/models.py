@@ -12,7 +12,7 @@ class Twittes(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return self.user.email
+        return f"twittes {self.pk}"
 
 
 class TwittesMedia(models.Model):
@@ -32,9 +32,6 @@ class Like(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self) -> str:
-        return self.user.email
-
 
 class Comment(models.Model):
     user = models.ForeignKey(
@@ -46,9 +43,6 @@ class Comment(models.Model):
     message = models.TextField(verbose_name=_('Message'))
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self) -> str:
-        return self.user.email
-
 
 class ReTwittes(models.Model):
     user = models.ForeignKey(
@@ -58,6 +52,3 @@ class ReTwittes(models.Model):
         Twittes, on_delete=models.CASCADE, verbose_name=_('Twittes'), related_name='reTwittes_twittes'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return self.user.email
