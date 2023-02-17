@@ -10,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class SignUpUserSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    username = serializers.CharField(max_length=20)
     password = serializers.CharField(max_length=50, write_only=True)
 
     def validate_email(self, value):
@@ -19,7 +20,8 @@ class SignUpUserSerializer(serializers.Serializer):
 
     def process(self, validated_data):
         user = User.objects.create(
-            email=validated_data['email']
+            email=validated_data['email'],
+            username=validated_data['username'],
         )
         user.set_password(validated_data['password'])
         user.save()
