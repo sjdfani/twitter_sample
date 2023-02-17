@@ -21,9 +21,9 @@ class SignInUser(APIView):
             data=request.data, context={'request': request}
         )
         if serializer.is_valid(raise_exception=True):
-            username = serializer.validated_data['username']
+            email = serializer.validated_data['email']
             password = serializer.validated_data['password']
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
             if user.check_password(password):
                 user.last_login = timezone.now()
                 user.save()
