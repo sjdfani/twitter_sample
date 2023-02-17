@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Twittes, TwittesMedia
+from .models import Twittes, TwittesMedia, Like, Comment
 from users.serializer import UserSerializer
 
 
@@ -42,3 +42,33 @@ class RetrieveUpdateDestroyTwittesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Twittes
         exclude = ('user',)
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    twittes = TwittesSerializer(read_only=True)
+
+    class Meta:
+        model = Like
+        fields = '__all__'
+
+
+class CreateLikeSerializer(serializers.Serializer):
+    twittes = serializers.PrimaryKeyRelatedField(
+        queryset=Twittes.objects.all()
+    )
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if Like.objects.filter(user=user, twittes=attrs['twittes']).exists():
+            raise serializers.ValidationError(
+                {'like': 'you liked this twittes'})
+        return attrs
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        obj = Like.objects.create(
+            user=user,
+            twittes=validated_data['twittes']
+        )
+        return obj
